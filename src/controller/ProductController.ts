@@ -12,7 +12,7 @@ export class ProductController implements ProductRepository {
 
     registerProduct(product: Product): void {
         this.products.push(product);
-        console.log(colors.fg.green, `\n\n-> Product number '${product.getId()}' has been successfully registered!\n`, colors.reset);
+        console.log(colors.fg.green, `\n-> Product number '${product.getId()}' has been successfully registered!\n`, colors.reset);
     }
 
     listAllProducts(): void {
@@ -34,11 +34,29 @@ export class ProductController implements ProductRepository {
     }
 
     updateProduct(product: Product): void {
+
+        let searchedProduct = this.searchInArray(product.getId());
+
+        if (searchedProduct != null) {
+            this.products[this.products.indexOf(searchedProduct)] = product;
+            console.log(colors.fg.green, `\n-> Product number '${product.getId()}' has been updated successfully!\n`, colors.reset);
+        } else {
+            console.log(colors.fg.red, `\n-> Product number '${product.getId()}' was not found!\n`, colors.reset);
+        }
         
     }
 
     deleteProduct(id: number): void {
         
+        let searchedProduct = this.searchInArray(id);
+
+        if (searchedProduct != null) {
+            this.products.splice(this.products.indexOf(searchedProduct), 1);
+            console.log(colors.fg.green, `\n\n-> Product number '${id}' has been deleted successfully!\n`, colors.reset);
+        } else {
+            console.log(colors.fg.red, `\n\n-> Product number '${id}' was not found!\n`, colors.reset);
+        }
+
     }
 
     searchByName(prodName: string): boolean {
@@ -48,7 +66,7 @@ export class ProductController implements ProductRepository {
     
         if (searchByProdName.length > 0) {
             // Data Listing
-            console.log("");
+            console.log();
             searchByProdName.forEach(product => product.display());
             return true;
         } else {
@@ -89,4 +107,34 @@ export class ProductController implements ProductRepository {
         return result;
     }
 
+    public getCurrentQuantities(productId: number): number | null {
+
+        let searchedProduct = this.searchInArray(productId);
+        
+        if (searchedProduct) {
+            return searchedProduct.getQuantity();
+        } else {
+            console.log(colors.fg.red, `\n\n-> Product number '${productId}' was not found!\n`, colors.reset);
+            return null;
+        }
+    }
+
+    public updateQuantity(productId: number, quantity: number): void {
+        let searchedProduct = this.searchInArray(productId);
+    
+        if (searchedProduct) {
+            // Validate stock availability
+            if (searchedProduct.getQuantity() < quantity) {
+                console.log(colors.fg.red, `\n\n-> Impossible to remove! Insufficient stock for product number '${productId}'.\n`, colors.reset);
+                return;
+            }
+    
+            // Update the quantity
+            searchedProduct.setQuantity(searchedProduct.getQuantity() - quantity);
+            console.log(colors.fg.green, `\n\n-> The total number in stock of product number '${productId}' has been updated successfully!\n`, colors.reset);
+        } else {
+            console.log(colors.fg.red, `\n\n-> Product number '${productId}' was not found!\n`, colors.reset);
+        }
+    }
+    
 }

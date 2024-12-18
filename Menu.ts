@@ -10,9 +10,17 @@ export function main() {
     let product: ProductController = new ProductController();
 
     // Auxiliary Variables
-    let option, productType, quantity, price: number;
+    let option, productType, quantity, price, productId: number;
     let prodName, prodCategory, genericName, fragranceName: string;
     const productTypes = ['Medicine', 'Cosmetic'];
+
+    // New Instances of the "Medicine" Class (Objects)
+    product.registerProduct(new Medicine(product.generateId(), "Tylenol", 1, 100, 25.50, "Analgesic", "Paracetamol"));
+    product.registerProduct(new Medicine(product.generateId(), "Advil", 1, 50, 19.90, "Analgesic", "Ibuprofen"));
+
+    // New Instances of the "Cosmetic" Class (Objects)
+    product.registerProduct(new Cosmetic(product.generateId(), "Nivea Soft", 2, 50, 29.90, "Skin Care", "Citrus"));
+    product.registerProduct(new Cosmetic(product.generateId(), "Pantene Pro-V", 2, 200, 18.50, "Hair Care", "Floral"));
 
     do {
 
@@ -54,6 +62,7 @@ export function main() {
                         genericName = readlineSync.question("\n6) Enter the generic name of the medicine: ");
                         let formattedGenName = product.toTitleCase(genericName);
 
+                        console.log();
                         product.registerProduct(new Medicine(product.generateId(), formattedProdName, productType, quantity, price, prodCategory, formattedGenName));
 
                         break;
@@ -77,7 +86,7 @@ export function main() {
                             fragranceName = "N/A";
                         }   
                         
-                        
+                        console.log();
                         product.registerProduct(new Cosmetic(product.generateId(), formattedProdName, productType, quantity, price, prodCategory, fragranceName));
 
                         break;
@@ -105,6 +114,15 @@ export function main() {
 
                 if(!product.isEmpty()) {
                     console.log(colors.fg.whitestrong, "\nSearch product by ID:\n", colors.reset);
+
+                    productId = readlineSync.questionInt("\nEnter the product number: ", {limitMessage: "\n-> Invalid data type entered!"});
+                    while(productId < 1) {
+                        productId = readlineSync.questionInt("\n-> Invalid number! Enter a value greater than 0: ");
+                    }
+                    
+                    console.log();
+                    product.searchById(productId);
+
                 } else {
                     console.log(colors.fg.red, "\nThere is no data registered yet! \n", colors.reset);
                 }
@@ -113,39 +131,164 @@ export function main() {
                 break;
                 
             case 4:
+
                 if(!product.isEmpty()) {
                     console.log(colors.fg.whitestrong, "\nUpdate a product:\n", colors.reset);
+
+                    productId = readlineSync.questionInt("\n- Enter the product ID: ", {limitMessage: "\n-> Invalid data type entered!"});
+                    while(productId < 1) {
+                        productId = readlineSync.questionInt("\n-> Invalid ID! Enter a value greater than 0: ");
+                    }
+
+                    let searchedProduct = product.searchInArray(productId);
+
+                    if(searchedProduct != null) {
+                        prodName = readlineSync.question("\n1) Enter the new product comercial name: ");
+                        let formattedProdName = product.toTitleCase(prodName);
+
+                        console.log("\n2) Select the new product type:");
+                        productType = readlineSync.keyInSelect(productTypes, "> ", {cancel: false}) + 1;
+
+                        quantity = readlineSync.questionInt("\n3) Enter the new total quantity of products: ", {limitMessage: "\n-> Invalid data type entered!"});
+                        while(quantity < 1) {
+                            quantity = readlineSync.questionInt("\n-> Invalid data! Enter a quantity greater than 0: ");
+                        }
+
+                        price = readlineSync.questionFloat("\n4) Enter the new individual product price: R$ ");
+                        while(price < 0.01) {
+                            price = readlineSync.questionFloat("\n-> Invalid data! Enter a price greater than R$ 0.00: R$ ");
+                        }
+
+                        switch(productType) {
+                            
+                            case 1:
+
+                                prodCategory = getMedCategories();
+                                if(prodCategory === "Other") {
+                                    prodCategory = readlineSync.question("\n-> Specify the category of the medicine: ");
+                                    let formattedMedCat = product.toTitleCase(prodCategory);
+                                    prodCategory = formattedMedCat;
+                                }
+
+                                genericName = readlineSync.question("\n6) Enter the generic name of the medicine: ");
+                                let formattedGenName = product.toTitleCase(genericName);
+
+                                console.log();
+                                product.updateProduct(new Medicine(productId, formattedProdName, productType, quantity, price, prodCategory, formattedGenName));
+
+                                break;
+
+                            case 2:
+
+                                prodCategory = getCosmCategories();
+                                if(prodCategory === "Other") {
+                                    prodCategory = readlineSync.question("\n-> Specify the category of the cosmetic: ");
+                                    let formattedCosmCat = product.toTitleCase(prodCategory);
+                                    prodCategory = formattedCosmCat;
+                                }
+
+                                let checkFrag = readlineSync.keyInYNStrict("\n6) Does the product have a fragrance? ");
+
+                                if(checkFrag) {
+                                    fragranceName = readlineSync.question("\n-> Enter the fragrance of the cosmetic: ");
+                                    let formattedFragName = product.toTitleCase(fragranceName);
+                                    fragranceName = formattedFragName;
+                                } else {
+                                    fragranceName = "N/A";
+                                }   
+                                
+                                console.log();
+                                product.updateProduct(new Cosmetic(productId, formattedProdName, productType, quantity, price, prodCategory, fragranceName));
+
+                                break;
+                            
+                        }
+                    } else {
+                        console.log(colors.fg.red, `\n\n-> Product number '${productId}' was not found!\n`, colors.reset);
+                    }
+
                 } else {
                     console.log(colors.fg.red, "\nThere is no data registered yet! \n", colors.reset);
                 }
 
                 keyPress();
                 break;
+
             case 5:
+
                 if(!product.isEmpty()) {
                     console.log(colors.fg.whitestrong, "\nDelete a product:\n", colors.reset);
+
+                    productId = readlineSync.questionInt("\n- Enter the product ID: ", {limitMessage: "\n-> Invalid data type entered!"});
+                    while(productId < 1) {
+                        productId = readlineSync.questionInt("\n-> Invalid ID! Enter a value greater than 0: ");
+                    }
+
+                    let searchedProduct = product.searchInArray(productId);
+
+                    if(searchedProduct != null) {
+
+                        let confirmation: boolean;
+
+                        product.searchById(productId);
+
+                        console.log(colors.fg.red, `\n-> This product has ${product.getCurrentQuantities(productId)} unit(s) in stock. Do you want to remove all or just some units (y - all / n - some)?\n`, colors.reset);
+                        confirmation = readlineSync.keyInYNStrict('-> ');
+
+                        if(confirmation) {
+                            product.deleteProduct(productId);
+                        } else {
+                            let quantityForRemoval = readlineSync.questionInt("\n- Enter the quantity you want to remove: ", {limitMessage: "\n-> Invalid data type entered!"});
+                            while(quantityForRemoval < 1) {
+                                quantityForRemoval = readlineSync.questionInt("\n-> Invalid data! Enter a quantity greater than 0: ");
+                            }
+
+                            if(quantityForRemoval === product.getCurrentQuantities(productId)) {
+                                product.deleteProduct(productId);
+                            } else {
+                                product.updateQuantity(productId, quantityForRemoval);
+                            }
+                        }
+                    } else {
+                        console.log(colors.fg.red, `\n\n-> Product number '${productId}' was not found!\n`, colors.reset);
+                    }
+
                 } else {
                     console.log(colors.fg.red, "\nThere is no data registered yet! \n", colors.reset);
                 }
 
                 keyPress();
                 break;
+
             case 6:
+
                 if(!product.isEmpty()) {
                     console.log(colors.fg.whitestrong, "\nSearch product by name:\n", colors.reset);
+
+                    prodName = readlineSync.question("\nEnter the product comercial name: ");
+                    let formattedProdName = product.toTitleCase(prodName);
+
+                    if(!product.searchByName(formattedProdName)) {
+                        console.log(colors.fg.red, `\n\n-> There is no product whose name is '${formattedProdName}'.\n`, colors.reset);
+                    }
+
                 } else {
                     console.log(colors.fg.red, "\nThere is no data registered yet! \n", colors.reset);
                 }
 
                 keyPress();
                 break;
+
             case 7:
+
                 console.log(colors.fg.greenstrong);
                 console.log("\nPharmaGen Drugstore - Taking care of you is our priority!");
                 about();
                 console.log(colors.reset, "");
                 break;
+
             default:
+
                 console.log(colors.fg.whitestrong, "\n-> Invalid option! Choose an option between 0 and 9.", colors.reset);
 
         }
