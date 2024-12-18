@@ -340,9 +340,9 @@ export function getMedCategories(): string {
     ];
 
     console.log("\n- Select the medicine category:");
-    let medicineCat = readlineSync.keyInSelect(medicineCategories, "> ", {cancel: false}) + 1;
+    let medicineCat = readlineSync.keyInSelect(medicineCategories, "> ", {cancel: false});
 
-    return medicineCategories[medicineCat - 1];
+    return medicineCategories[medicineCat];
 
 }
 
@@ -361,9 +361,9 @@ export function getCosmCategories(): string {
     ];
 
     console.log("\n- Select the cosmetic category:");
-    let cosmeticCategory = readlineSync.keyInSelect(cosmeticCategories, "> ", {cancel: false}) + 1;
+    let cosmeticCategory = readlineSync.keyInSelect(cosmeticCategories, "> ", {cancel: false});
 
-    return cosmeticCategories[cosmeticCategory - 1];
+    return cosmeticCategories[cosmeticCategory];
 
 }
 
