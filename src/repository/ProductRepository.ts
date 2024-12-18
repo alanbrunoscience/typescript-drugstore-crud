@@ -9,8 +9,5 @@ export interface ProductRepository {
     updateProduct(product: Product): void;
     deleteProduct(id: number): void;
     searchByName(prodName: string): boolean;
-
-    // Auxiliary Methods
-    manageStock(quantity: number): void;
     
 }
