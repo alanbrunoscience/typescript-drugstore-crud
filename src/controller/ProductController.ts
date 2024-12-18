@@ -107,18 +107,6 @@ export class ProductController implements ProductRepository {
         return result;
     }
 
-    public getCurrentQuantities(productId: number): number | null {
-
-        let searchedProduct = this.searchInArray(productId);
-        
-        if (searchedProduct) {
-            return searchedProduct.getQuantity();
-        } else {
-            console.log(colors.fg.red, `\n\n-> Product number '${productId}' was not found!\n`, colors.reset);
-            return null;
-        }
-    }
-
     public updateQuantity(productId: number, quantity: number): void {
         let searchedProduct = this.searchInArray(productId);
     

@@ -32,18 +32,18 @@ export function main() {
                 
                 console.log(colors.fg.whitestrong, "\nRegister product:\n", colors.reset);
 
-                prodName = readlineSync.question("\n1) Enter the product comercial name: ");
+                prodName = readlineSync.question("\n- Enter the product comercial name: ");
                 let formattedProdName = product.toTitleCase(prodName);
 
-                console.log("\n2) Select the product type:");
+                console.log("\n- Select the product type:");
                 productType = readlineSync.keyInSelect(productTypes, "> ", {cancel: false}) + 1;
 
-                quantity = readlineSync.questionInt("\n3) Enter the total quantity of products: ", {limitMessage: "\n-> Invalid data type entered!"});
+                quantity = readlineSync.questionInt("\n- Enter the total quantity of products: ", {limitMessage: "\n-> Invalid data type entered!"});
                 while(quantity < 1) {
                     quantity = readlineSync.questionInt("\n-> Invalid data! Enter a quantity greater than 0: ");
                 }
 
-                price = readlineSync.questionFloat("\n4) Enter the individual product price: R$ ");
+                price = readlineSync.questionFloat("\n- Enter the individual product price: R$ ");
                 while(price < 0.01) {
                     price = readlineSync.questionFloat("\n-> Invalid data! Enter a price greater than R$ 0.00: R$ ");
                 }
@@ -59,7 +59,7 @@ export function main() {
                             prodCategory = formattedMedCat;
                         }
 
-                        genericName = readlineSync.question("\n6) Enter the generic name of the medicine: ");
+                        genericName = readlineSync.question("\n- Enter the generic name of the medicine: ");
                         let formattedGenName = product.toTitleCase(genericName);
 
                         console.log();
@@ -76,7 +76,7 @@ export function main() {
                             prodCategory = formattedCosmCat;
                         }
 
-                        let checkFrag = readlineSync.keyInYNStrict("\n6) Does the product have a fragrance? ");
+                        let checkFrag = readlineSync.keyInYNStrict("\n- Does the product have a fragrance? ");
 
                         if(checkFrag) {
                             fragranceName = readlineSync.question("\n-> Enter the fragrance of the cosmetic: ");
@@ -143,18 +143,17 @@ export function main() {
                     let searchedProduct = product.searchInArray(productId);
 
                     if(searchedProduct != null) {
-                        prodName = readlineSync.question("\n1) Enter the new product comercial name: ");
+                        prodName = readlineSync.question("\n- Enter the new product comercial name: ");
                         let formattedProdName = product.toTitleCase(prodName);
 
-                        console.log("\n2) Select the new product type:");
-                        productType = readlineSync.keyInSelect(productTypes, "> ", {cancel: false}) + 1;
+                        productType = searchedProduct.getProdType();
 
-                        quantity = readlineSync.questionInt("\n3) Enter the new total quantity of products: ", {limitMessage: "\n-> Invalid data type entered!"});
+                        quantity = readlineSync.questionInt("\n- Enter the new total quantity of products: ", {limitMessage: "\n-> Invalid data type entered!"});
                         while(quantity < 1) {
                             quantity = readlineSync.questionInt("\n-> Invalid data! Enter a quantity greater than 0: ");
                         }
 
-                        price = readlineSync.questionFloat("\n4) Enter the new individual product price: R$ ");
+                        price = readlineSync.questionFloat("\n- Enter the new individual product price: R$ ");
                         while(price < 0.01) {
                             price = readlineSync.questionFloat("\n-> Invalid data! Enter a price greater than R$ 0.00: R$ ");
                         }
@@ -165,12 +164,12 @@ export function main() {
 
                                 prodCategory = getMedCategories();
                                 if(prodCategory === "Other") {
-                                    prodCategory = readlineSync.question("\n-> Specify the category of the medicine: ");
+                                    prodCategory = readlineSync.question("\n-> Specify the new category of the medicine: ");
                                     let formattedMedCat = product.toTitleCase(prodCategory);
                                     prodCategory = formattedMedCat;
                                 }
 
-                                genericName = readlineSync.question("\n6) Enter the generic name of the medicine: ");
+                                genericName = readlineSync.question("\n- Enter the new generic name of the medicine: ");
                                 let formattedGenName = product.toTitleCase(genericName);
 
                                 console.log();
@@ -182,15 +181,15 @@ export function main() {
 
                                 prodCategory = getCosmCategories();
                                 if(prodCategory === "Other") {
-                                    prodCategory = readlineSync.question("\n-> Specify the category of the cosmetic: ");
+                                    prodCategory = readlineSync.question("\n-> Specify the new category of the cosmetic: ");
                                     let formattedCosmCat = product.toTitleCase(prodCategory);
                                     prodCategory = formattedCosmCat;
                                 }
 
-                                let checkFrag = readlineSync.keyInYNStrict("\n6) Does the product have a fragrance? ");
+                                let checkFrag = readlineSync.keyInYNStrict("\n- Does the product have a fragrance? ");
 
                                 if(checkFrag) {
-                                    fragranceName = readlineSync.question("\n-> Enter the fragrance of the cosmetic: ");
+                                    fragranceName = readlineSync.question("\n-> Enter the new fragrance of the cosmetic: ");
                                     let formattedFragName = product.toTitleCase(fragranceName);
                                     fragranceName = formattedFragName;
                                 } else {
@@ -232,7 +231,7 @@ export function main() {
 
                         product.searchById(productId);
 
-                        console.log(colors.fg.red, `\n-> This product has ${product.getCurrentQuantities(productId)} unit(s) in stock. Do you want to remove all or just some units (y - all / n - some)?\n`, colors.reset);
+                        console.log(colors.fg.red, `\n-> This product has ${searchedProduct.getQuantity()} unit(s) in stock. Do you want to remove all or just some units (y - all / n - some)?\n`, colors.reset);
                         confirmation = readlineSync.keyInYNStrict('-> ');
 
                         if(confirmation) {
@@ -243,7 +242,7 @@ export function main() {
                                 quantityForRemoval = readlineSync.questionInt("\n-> Invalid data! Enter a quantity greater than 0: ");
                             }
 
-                            if(quantityForRemoval === product.getCurrentQuantities(productId)) {
+                            if(quantityForRemoval === searchedProduct.getQuantity()) {
                                 product.deleteProduct(productId);
                             } else {
                                 product.updateQuantity(productId, quantityForRemoval);
@@ -340,7 +339,7 @@ export function getMedCategories(): string {
         'Other'
     ];
 
-    console.log("\n5) Select the medicine category:");
+    console.log("\n- Select the medicine category:");
     let medicineCat = readlineSync.keyInSelect(medicineCategories, "> ", {cancel: false}) + 1;
 
     return medicineCategories[medicineCat - 1];
@@ -361,7 +360,7 @@ export function getCosmCategories(): string {
         'Other'
     ];
 
-    console.log("\n5) Select the cosmetic category:");
+    console.log("\n- Select the cosmetic category:");
     let cosmeticCategory = readlineSync.keyInSelect(cosmeticCategories, "> ", {cancel: false}) + 1;
 
     return cosmeticCategories[cosmeticCategory - 1];
