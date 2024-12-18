@@ -16,9 +16,11 @@ export class ProductController implements ProductRepository {
     }
 
     listAllProducts(): void {
-        for(let product of this.products) {
-            product.display();
-        }
+        // for(let product of this.products) {
+        //     product.display();
+        // }
+
+        this.products.forEach(product => product.display());
     }
 
     searchById(id: number): void {
