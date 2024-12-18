@@ -75,10 +75,6 @@ export class ProductController implements ProductRepository {
 
     }
 
-    manageStock(quantity: number): void {
-        
-    }
-
     // Complementary Methods
     public toTitleCase(originalName: string) {
         return originalName
